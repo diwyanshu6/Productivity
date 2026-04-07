@@ -96,8 +96,8 @@ app.patch("/tasks/:id", auth, async (req, res) => {//patch because only part of 
 // GET ALL
 app.get("/tasks", auth, async (req, res) => {
     const { status, search } = req.query;
-    const page=req.query.page;
-    const limit=req.query.limit
+    const page=req.query.page||1;
+    const limit=req.query.limit||5
     const offset=(1-page)*limit
 
     try {
