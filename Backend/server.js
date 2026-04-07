@@ -96,6 +96,9 @@ app.patch("/tasks/:id", auth, async (req, res) => {//patch because only part of 
 // GET ALL
 app.get("/tasks", auth, async (req, res) => {
     const { status, search } = req.query;
+    const page=req.query.page;
+    const limit=req.query.limit
+    const offset=(1-page)*limit
 
     try {
         let query = "SELECT * FROM tasks WHERE user_id = $1";
@@ -115,9 +118,15 @@ app.get("/tasks", auth, async (req, res) => {
 
         query += " ORDER BY id";
 
+
+        //pagination 
+        values.push(limit);
+        values.push(offset);
+
+        query += ` ORDER BY id LIMIT $${values.length - 1} OFFSET $${values.length}`;
         const result = await pool.query(query, values);
 
-        res.json(result.rows);
+        res.json(page,offset,result.rows);
     } catch (err) {
         res.status(500).send("Server error");
     }
