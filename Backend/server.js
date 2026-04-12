@@ -3,6 +3,8 @@ const app = express();
 const pool = require("./config/db");
 const becrypt=require('bcrypt')
 const jwt=require("jsonwebtoken")
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 
 // Middleware
@@ -73,7 +75,8 @@ app.post("/tasks", Authorisation, async (req, res) => {
 });
 
 
-app.patch("/tasks/:id", auth, async (req, res) => {//patch because only part of the data is updated if we do put then reddundacy will came put only used for when we update whole part 
+app.patch("/tasks/:id", Authorisation, async (req, res) => { //patch because only part of the data is updated if we do put then reddundacy
+//  will came put only used for when we update whole part 
     const { id } = req.params;
     const { completed } = req.body;
 
@@ -94,7 +97,7 @@ app.patch("/tasks/:id", auth, async (req, res) => {//patch because only part of 
 });
 
 // GET ALL
-app.get("/tasks", auth, async (req, res) => {
+app.get("/tasks", Authorisation, async (req, res) => {
     const { status, search } = req.query;
     const page=req.query.page||1;
     const limit=req.query.limit||5
@@ -260,6 +263,7 @@ app.post("/login", async (req, res) => {
         );
 
         res.json({ token });
+        console.log("login")
 
     } catch (err) {
         console.error(err);
